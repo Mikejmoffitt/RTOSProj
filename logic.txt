@@ -1,0 +1,40 @@
+
+main:
+	start teller threads 1 - 3
+	start timer thread
+	join teller threads
+	kill timer thread
+
+teller:
+	if busy = 0:
+		if we have a customer:
+			record current time in customer's finish_time
+			mutex lock finished queue
+			put current customer in finished queue
+			mutex unlock finished queue
+		
+		if new customers are available:
+			mutex lock arrival queue
+			take a new customer from arrival queue
+			set new customer's teller time to current time
+			mutex unlock arrival queue
+			set wait time to 0
+		else
+			wait_time++;
+			if wait timer is > longest wait:
+				update longest wait
+	else
+		busy--;
+	if (global_time > 4:00 PM and busy = 0 and arrival queue is empty):
+		thread_exit();
+	
+timer:
+	global_time++;
+	if customer creation countdown = 0:
+		mutex arrival queue
+		enqueue a new customer
+		mutex unlock arrival queue
+		set creatoin countdown to random(1 - 4 minutes)
+	else
+		countdown customer creation;
+

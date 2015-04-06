@@ -68,7 +68,7 @@ void print_customer_stats(void)
 		// Longest time spent in line
 		if (queue_time_worst < (c->teller_time - c->arrival_time))
 		{
-			queue_time_worst = (c->teller_time - c->arrival_time);
+			ueue_time_worst = (c->teller_time - c->arrival_time);
 		}
 		if (transaction_time_worst < (c->finish_time - c->teller_time))
 		{

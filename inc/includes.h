@@ -12,5 +12,6 @@
 #include "globals.h"
 #include "teller.h"
 #include "util.h"
-
+#include "txtcolor.h"
 #endif
+

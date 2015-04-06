@@ -9,20 +9,16 @@ int line_max_len;
 
 void *timer_thread(void *arg)
 {
-	
-	txtcolor(COL_BRIGHT,COL_GREEN,COL_BLACK);
 	printf(">> Starting timer thread.\n");
 	line_max_len = 0;
 	for(;;)
 	{
 		if (global_time == BANK_OPENING)
 		{
-			txtcolor(COL_BLINK,COL_WHITE,COL_BLUE);
 			printf("The bank has opened.\n");
 		}
 		else if (global_time == BANK_CLOSING)
 		{
-			txtcolor(COL_BLINK,COL_WHITE,COL_RED);
 			printf("The bank has closed.\n");
 		}
 		// Roughly 600 "frames" per second 
@@ -38,14 +34,12 @@ void *timer_thread(void *arg)
 		if (customer_add_countdown == 0)
 		{
 			// Set a timeout for the next time this will happen
-			customer_add_countdown = rand_range(20, TIME_MINUTE);
+			customer_add_countdown = rand_range(10, TIME_MINUTE);
 
 			// Customer add function also marks arrival timestamp
 			pthread_mutex_lock(&in_lock);
-			txtcolor(COL_BLINK,COL_MAGENTA,COL_BLACK);
 			printf("%08d: [TIMER] Customer %d has entered the bank.\n",global_time, total_customers);
 			in_queue = customer_add(in_queue);
-			txtcolor(COL_RESET,COL_WHITE,COL_BLACK);
 			customer_print(in_queue);
 			if (customer_queue_len(in_queue) > line_max_len)
 			{
@@ -120,13 +114,11 @@ int main(int argc, char **argv)
 
 	global_time = BANK_OPENING;
 
-	txtcolor(COL_RESET,COL_CYAN,COL_BLACK);
 	printf("The bank will open at ");
 	print_time(BANK_OPENING);
 	printf(" and close at ");
 	print_time(BANK_CLOSING);
 	printf("\n");
-	txtcolor(COL_RESET,COL_WHITE,COL_BLACK);
 
 	for (int i = 0; i < NUM_TELLERS; i++)
 	{
@@ -137,12 +129,10 @@ int main(int argc, char **argv)
 	for (int i = 0; i < NUM_TELLERS; i++)
 	{
 		pthread_join(threads[i],NULL);	
-		txtcolor(COL_RESET,COL_RED,COL_BLACK);
 		printf("Teller %d has closed his/her window.\n",i);
 	}
 	// Kill timer thread
 	pthread_cancel(thread_ids[NUM_TELLERS]);
-	txtcolor(COL_RESET,COL_WHITE,COL_BLACK);
 	printf("-----------------------------------------------\n");
 	printf("Total customers processed: %d\n",total_customers);
 	printf("Max queue length: %d\n",line_max_len);

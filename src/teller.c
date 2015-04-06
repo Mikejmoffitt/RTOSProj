@@ -4,6 +4,7 @@ void *teller_thread(void *arg)
 {
 	teller *t = (teller *)arg;
 	teller_init(t);
+	txtcolor(COL_BRIGHT,COL_GREEN,COL_BLACK);
 	printf("%08d: [TELLER] %X has opened his/her window.\n",global_time,(s64)t);
 	customer *c = NULL;
 
@@ -34,6 +35,7 @@ void *teller_thread(void *arg)
 
 				// Duration of break is between 1 minute and 4 minutes
 				t->break_time = rand_range(1 * TIME_MINUTE, 4 * TIME_MINUTE);
+				txtcolor(COL_BRIGHT,COL_BLUE,COL_BLACK);
 				printf("%08d: [TELLER] %X is taking a break for %d seconds.\n",global_time,(s64)t,t->break_time);
 			}
 		}
@@ -45,6 +47,7 @@ void *teller_thread(void *arg)
 			{
 				// Record the customer's finishing time.
 				c->finish_time = global_time;
+				txtcolor(COL_BRIGHT,COL_RED,COL_BLACK);
 				printf("%08d: [TELLER] %X is finished with customer %d\n",global_time,(s64)t,c->id);
 
 				// Put customer onto finished queue
@@ -82,6 +85,7 @@ void *teller_thread(void *arg)
 				// Be busy between 30 seconds and 6 minutes
 				t->busy_time = rand_range(30, 60 * 6);
 				t->wait_time = 0;
+				txtcolor(COL_BRIGHT,COL_YELLOW,COL_BLACK);
 				printf("%08d: [TELLER] %X took in customer %d for %d seconds\n",global_time, (s64)t,c->id,t->busy_time);
 			}
 			else
@@ -116,6 +120,6 @@ void teller_init(teller *t)
 	t->wait_time = 0;
 	t->busy_time = 0;
 	t->break_time = 0;
-	t->break_delay = 0; 
+	t->break_delay = rand_range(TIME_MINUTE * 30, TIME_MINUTE * 60); 
 	t->total_wait = 0;
 }

@@ -68,7 +68,7 @@ void print_customer_stats(void)
 		// Longest time spent in line
 		if (queue_time_worst < (c->teller_time - c->arrival_time))
 		{
-			ueue_time_worst = (c->teller_time - c->arrival_time);
+			queue_time_worst = (c->teller_time - c->arrival_time);
 		}
 		if (transaction_time_worst < (c->finish_time - c->teller_time))
 		{
@@ -135,7 +135,7 @@ int main(int argc, char **argv)
 	pthread_cancel(thread_ids[NUM_TELLERS]);
 	printf("-----------------------------------------------\n");
 	printf("Total customers processed: %d\n",total_customers);
-
+	printf("Max queue length: %d\n",line_max_len);
 	print_customer_stats();
 	print_teller_stats();
 	//customer_print(out_queue);

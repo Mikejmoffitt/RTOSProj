@@ -31,10 +31,10 @@ void *teller_thread(void *arg)
 			else if (t->busy_time == 0)
 			{
 				// Set random timeout between 30m - 60m for the next break
-				t->break_delay = rand_range(30 * TIME_MINUTE, 60 * TIME_MINUTE);
+				t->break_delay = rand_range(BREAK_DELAY_LOW, BREAK_DELAY_HIGH);
 
 				// Duration of break is between 1 minute and 4 minutes
-				t->break_time = rand_range(1 * TIME_MINUTE, 4 * TIME_MINUTE);
+				t->break_time = rand_range(BREAK_DELAY_LOW, BREAK_DELAY_HIGH);
 				txtcolor(COL_BRIGHT,COL_BLUE,COL_BLACK);
 				printf("%08d: [TELLER] %X is taking a break for %d seconds.\n",global_time,(s64)t,t->break_time);
 			}
@@ -83,7 +83,7 @@ void *teller_thread(void *arg)
 				c->teller_time = global_time;
 
 				// Be busy between 30 seconds and 6 minutes
-				t->busy_time = rand_range(30, 60 * 6);
+				t->busy_time = rand_range(TELLER_TIME_LOW, TELLER_TIME_HIGH);
 				t->wait_time = 0;
 				txtcolor(COL_BRIGHT,COL_YELLOW,COL_BLACK);
 				printf("%08d: [TELLER] %X took in customer %d for %d seconds\n",global_time, (s64)t,c->id,t->busy_time);
@@ -120,6 +120,6 @@ void teller_init(teller *t)
 	t->wait_time = 0;
 	t->busy_time = 0;
 	t->break_time = 0;
-	t->break_delay = rand_range(TIME_MINUTE * 30, TIME_MINUTE * 60); 
+	t->break_delay = rand_range(BREAK_DELAY_LOW, BREAK_DELAY_HIGH); 
 	t->total_wait = 0;
 }

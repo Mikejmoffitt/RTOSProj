@@ -1,8 +1,6 @@
 #include "globals.h"
 #include "includes.h"
 
-#define NUM_TELLERS 2
-
 teller tellers[NUM_TELLERS];
 
 int line_max_len;
@@ -38,7 +36,7 @@ void *timer_thread(void *arg)
 		if (customer_add_countdown == 0)
 		{
 			// Set a timeout for the next time this will happen
-			customer_add_countdown = rand_range(20, TIME_MINUTE);
+			customer_add_countdown = rand_range(CUSTOMER_SPAWN_LOW, CUSTOMER_SPAWN_HIGH);
 
 			// Customer add function also marks arrival timestamp
 			pthread_mutex_lock(&in_lock);

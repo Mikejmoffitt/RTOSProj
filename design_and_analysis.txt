@@ -1,0 +1,18 @@
+Design and Analysis
+-------------------
+
+For this project, we thought the prompt immediately called for a queue data structure. As we were resolved to keep working in C instead of accepting the overhead of C++'s functionality, we elected to implement a linked list for the customers. Support functions allow for both queue and dequeue operations, as well as a push_back operation like a stack. As there is no top-level structure encompassing the stack or queue the data structures are flexible at the expense of simplicity.
+
+Two data structures are used: the teller and the customer. The teller data structure keeps track of a few state variables relating to timing, as well as statistics for later analysis. The customer structure keeps track of the next customer in the list, and some record-keeping variables.
+
+The main thread spawns three teller threads, and one timer thread. The timer thread is responsible for incrementing the global time counter, and choosing when to have a customer enter the bank during open hours. 
+
+The teller thread is responsible for taking in customers if the teller is not busy. When a customer is taken in, the teller's busy time variable is set to a random number inside a pre-defined range (30 seconds to 6 minutes). When the customer's transaction is finished, timestamps are recorded for record-keeping and the customer is pushed into a second queue (out_queue) for later data analysis.
+
+By keeping a queue of all customers that have already had a transaction, it is easy to perform analysis afterwards. Mutexes are put on both queues to ensure no two threads are attempting to use it at once, which can lead to a broken queue. 
+
+Once the bank closes, the timer thread will stop adding new customers. The tellers will process the remaining customers who are still in the bank, then close their windows. At that point the teller threads exit. As the main thread is joining the teller threads, it proceeds to cancel the timer thread once all tellers are finished.
+
+After the simulation is complete, statistics are calculated and printed on screen from data collected in the teller and customer structures.
+
+Parameters for the simulation are broken out in parameters.h to make variations in the simulation easy to make.

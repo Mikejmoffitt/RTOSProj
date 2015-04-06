@@ -13,5 +13,6 @@
 #include "teller.h"
 #include "util.h"
 #include "txtcolor.h"
+#include "parameters.h"
 #endif
 

@@ -3,9 +3,14 @@
 
 #define NUM_TELLERS 3
 
+teller tellers[NUM_TELLERS];
+
+int line_max_len;
+
 void *timer_thread(void *arg)
 {
 	printf(">> Starting timer thread.\n");
+	line_max_len = 0;
 	for(;;)
 	{
 		if (global_time == BANK_OPENING)
@@ -36,6 +41,10 @@ void *timer_thread(void *arg)
 			printf("%08d: [TIMER] Customer %d has entered the bank.\n",global_time, total_customers);
 			in_queue = customer_add(in_queue);
 			customer_print(in_queue);
+			if (customer_queue_len(in_queue) > line_max_len)
+			{
+				line_max_len = customer_queue_len(in_queue);
+			}
 			pthread_mutex_unlock(&in_lock);
 		}	
 		else
@@ -45,6 +54,49 @@ void *timer_thread(void *arg)
 	}
 }
 
+void print_customer_stats(void)
+{
+	u32 queue_time_total = 0;
+	u32 queue_time_worst = 0;
+	u32 teller_time_total = 0;
+	u32 transaction_time_worst = 0;
+	customer *c = out_queue;
+	while (c != NULL)
+	{
+		queue_time_total += (c->teller_time - c->arrival_time);
+		teller_time_total += (c->finish_time - c->teller_time);
+		// Longest time spent in line
+		if (queue_time_worst < (c->teller_time - c->arrival_time))
+		{
+			queue_time_worst = (c->teller_time - c->arrival_time);
+		}
+		if (transaction_time_worst < (c->finish_time - c->teller_time))
+		{
+			transaction_time_worst = (c->finish_time - c->teller_time);
+		}
+		c = c->next;
+	}
+	printf("Average time customer spends in queue: %d seconds\n",(queue_time_total / total_customers));
+	printf("Average time customer spends with teller: %d seconds\n",(teller_time_total / total_customers));
+	printf("Longest time spent waiting in line: %d seconds\n",queue_time_worst);
+	printf("Longest transaction: %d seconds\n",transaction_time_worst);
+}
+
+void print_teller_stats(void)
+{
+	u32 wait_time_total = 0;
+	u32 longest_wait = 0;
+	for (int i = 0; i < NUM_TELLERS; i++)
+	{
+		wait_time_total += tellers[i].total_wait;
+		if (longest_wait < tellers[i].total_wait)
+		{
+			longest_wait = tellers[i].total_wait;
+		}
+	}
+	printf("Average time a teller waited for a customer: %d seconds\n",(wait_time_total / total_customers));
+}
+
 int main(int argc, char **argv)
 {
 	srand(time(NULL));
@@ -52,7 +104,6 @@ int main(int argc, char **argv)
 	pthread_mutex_init(&out_lock,NULL);
 
 	// Create tellers
-	teller tellers[NUM_TELLERS];
 	for (int i = 0; i < NUM_TELLERS; i++)
 	{
 		teller_init(&tellers[i]);
@@ -84,8 +135,10 @@ int main(int argc, char **argv)
 	pthread_cancel(thread_ids[NUM_TELLERS]);
 	printf("-----------------------------------------------\n");
 	printf("Total customers processed: %d\n",total_customers);
-	printf("Finished customers: \n");
-	customer_print(out_queue);
+
+	print_customer_stats();
+	print_teller_stats();
+	//customer_print(out_queue);
 
 	// Clean-up
 	pthread_mutex_destroy(&in_lock);

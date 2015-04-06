@@ -11,6 +11,7 @@ struct teller
 	u32 wait_time; // Counts up from zero when teller is free.
 	u32 break_delay; // Countdown to take a break
 	u32 break_time; // On a break
+	u32 total_wait; // Total amount of time spent waiting
 	
 };
 

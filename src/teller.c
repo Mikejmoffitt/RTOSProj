@@ -3,11 +3,12 @@
 void *teller_thread(void *arg)
 {
 	teller *t = (teller *)arg;
+	teller_init(t);
 	printf("%08d: [TELLER] %X has opened his/her window.\n",global_time,(s64)t);
 	customer *c = NULL;
 
 	u32 exit = 0;
-
+	
 	while (!exit)
 	{
 		usleep(TIME_DELAY);
@@ -18,7 +19,7 @@ void *teller_thread(void *arg)
 			t->break_time--;
 			continue;
 		}
-		else
+		else if (t->busy_time == 0)
 		{
 			// Prepare to take a break...
 			if (t->break_delay > 0)
@@ -26,7 +27,7 @@ void *teller_thread(void *arg)
 				t->break_delay--;
 			}
 			// Time to take a break.
-			else
+			else if (t->busy_time == 0)
 			{
 				// Set random timeout between 30m - 60m for the next break
 				t->break_delay = rand_range(30 * TIME_MINUTE, 60 * TIME_MINUTE);
@@ -86,6 +87,7 @@ void *teller_thread(void *arg)
 			else
 			{
 				t->wait_time++;
+				t->total_wait++;
 				if (t->wait_time > t->longest_wait)
 				{
 					t->longest_wait = t->wait_time;
@@ -115,4 +117,5 @@ void teller_init(teller *t)
 	t->busy_time = 0;
 	t->break_time = 0;
 	t->break_delay = 0; 
+	t->total_wait = 0;
 }
